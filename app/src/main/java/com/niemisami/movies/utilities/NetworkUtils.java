@@ -1,6 +1,7 @@
 package com.niemisami.movies.utilities;
 
 import android.net.Uri;
+import android.util.Log;
 import android.view.Display;
 
 import java.io.IOException;
@@ -14,11 +15,7 @@ public final class NetworkUtils {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
-    private String mTestPopularMoviesUrl = "https://api.themoviedb.org/3/movie/popular?api_key=";
-    public static String mPosterBaseUrl = "https://image.tmdb.org/t/p/w185/";
-    private String affex = "&language=en-US";
-    private static String mTmdbApiKey = "210a85d3ec88b99f1acfc50e4015b12b";
-
+    public static String mPosterBaseUrl = "https://image.tmdb.org/t/p/w185";
 
     public static URL buildUrl(String movieStringURL) {
         Uri uri = Uri.parse(movieStringURL).buildUpon().build();
@@ -35,10 +32,11 @@ public final class NetworkUtils {
 
     public static Uri buildPosterUri(String posterPath) {
 
-        Uri uri = Uri.parse(mPosterBaseUrl).buildUpon()
-                .appendPath(posterPath).build();
+        Uri uri = Uri.parse(mPosterBaseUrl + posterPath);
+        Log.d(TAG, uri.toString());
         return uri;
     }
+
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {

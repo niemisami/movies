@@ -9,6 +9,9 @@ import android.widget.TextView;
 
 import com.niemisami.movies.data.Movie;
 import com.niemisami.movies.utilities.NetworkUtils;
+import com.niemisami.movies.utilities.TmdbJsonParser;
+
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.URL;
@@ -24,7 +27,7 @@ public class MoviesActivity extends AppCompatActivity {
     private TextView mMoviesRawData;
     private String mTestPopularMoviesUrl = "https://api.themoviedb.org/3/movie/popular?api_key=";
     public static String mPosterBaseUrl = "https://image.tmdb.org/t/p/w500/";
-    private String affex = "&language=en-US";
+    private String suffix = "&language=en-US";
     private String mTmdbApiKey;
 
     private MovieAdapter mMovieAdapter;
@@ -40,13 +43,13 @@ public class MoviesActivity extends AppCompatActivity {
 //        mMoviesRawData = (TextView) findViewById(R.id.movies_list);
 
 
-        movies = new ArrayList<>();
-        for (int i = 0; i < 7; i++) {
-            movies.add(
-                    new Movie("Movie " + (i + 1), "nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg"));
-        }
+//        movies = new ArrayList<>();
+//        for (int i = 0; i < 7; i++) {
+//            movies.add(
+//                    new Movie("Movie " + (i + 1), "nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg"));
+//        }
         initRecyclerView();
-//        new FetchMoviesTask().execute(mTestPopularMoviesUrl + mTmdbApiKey + affex);
+        new FetchMoviesTask().execute(mTestPopularMoviesUrl + mTmdbApiKey + suffix);
 
     }
 
@@ -59,8 +62,6 @@ public class MoviesActivity extends AppCompatActivity {
         mMovieAdapter = new MovieAdapter();
         mMoviesRecyclerView.setAdapter(mMovieAdapter);
 
-
-        mMovieAdapter.setMovies(movies);
     }
 
 
@@ -92,8 +93,15 @@ public class MoviesActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             if (s != null) {
-//                mMoviesRawData.setText(s);
+                try {
+                    movies = TmdbJsonParser.getBasicMovieInfoFromJson(s);
+                    mMovieAdapter.setMovies(movies);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             } else {
+                mMovieAdapter.setMovies(null);
+                movies = null;
 //                mMoviesRawData.setText("No data from db");
             }
         }
