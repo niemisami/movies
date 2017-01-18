@@ -12,17 +12,24 @@ import com.niemisami.movies.utilities.NetworkUtils;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MoviesActivity extends AppCompatActivity {
 
 
-    private int DEFAULT_SPAN_COUNT = 3;
+    private int DEFAULT_SPAN_COUNT = 2;
 
     private RecyclerView mMoviesRecyclerView;
     private TextView mMoviesRawData;
     private String mTestPopularMoviesUrl = "https://api.themoviedb.org/3/movie/popular?api_key=";
+    public static String mPosterBaseUrl = "https://image.tmdb.org/t/p/w500/";
     private String affex = "&language=en-US";
     private String mTmdbApiKey;
+
+    private MovieAdapter mMovieAdapter;
+
+    private List<Movie> movies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +37,16 @@ public class MoviesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_movies);
 
         mTmdbApiKey = getResources().getString(R.string.tmdb_api_key);
-        mMoviesRawData = (TextView) findViewById(R.id.movies_list);
+//        mMoviesRawData = (TextView) findViewById(R.id.movies_list);
 
+
+        movies = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            movies.add(
+                    new Movie("Movie " + (i + 1), "nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg"));
+        }
         initRecyclerView();
-        new FetchMoviesTask().execute(mTestPopularMoviesUrl+ mTmdbApiKey + affex);
+//        new FetchMoviesTask().execute(mTestPopularMoviesUrl + mTmdbApiKey + affex);
 
     }
 
@@ -42,6 +55,12 @@ public class MoviesActivity extends AppCompatActivity {
         mMoviesRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_movies);
         mMoviesRecyclerView.setLayoutManager(gridLayoutManager);
         mMoviesRecyclerView.setHasFixedSize(false);
+
+        mMovieAdapter = new MovieAdapter();
+        mMoviesRecyclerView.setAdapter(mMovieAdapter);
+
+
+        mMovieAdapter.setMovies(movies);
     }
 
 
@@ -70,15 +89,13 @@ public class MoviesActivity extends AppCompatActivity {
             }
         }
 
-
         @Override
         protected void onPostExecute(String s) {
-            if(s != null) {
-                mMoviesRawData.setText(s);
+            if (s != null) {
+//                mMoviesRawData.setText(s);
             } else {
-                mMoviesRawData.setText("No data from db");
+//                mMoviesRawData.setText("No data from db");
             }
-
         }
     }
 

@@ -22,11 +22,11 @@ public class Movie {
         this.mTitle = mTitle;
     }
 
-    public String getImageSrc() {
+    public String getPosterPath() {
         return mPosterPath;
     }
 
-    public void setImageSrc(String mImageSrc) {
-        this.mPosterPath = mImageSrc;
+    public void setPosterPath(String posterPath) {
+        this.mPosterPath = posterPath;
     }
 }
