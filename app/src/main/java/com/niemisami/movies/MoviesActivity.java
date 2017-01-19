@@ -1,5 +1,7 @@
 package com.niemisami.movies;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,7 +20,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MoviesActivity extends AppCompatActivity {
+public class MoviesActivity extends AppCompatActivity implements MovieAdapter.OnMovieAdapterItemClickListener {
 
 
     private int DEFAULT_SPAN_COUNT = 2;
@@ -40,14 +42,7 @@ public class MoviesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_movies);
 
         mTmdbApiKey = getResources().getString(R.string.tmdb_api_key);
-//        mMoviesRawData = (TextView) findViewById(R.id.movies_list);
 
-
-//        movies = new ArrayList<>();
-//        for (int i = 0; i < 7; i++) {
-//            movies.add(
-//                    new Movie("Movie " + (i + 1), "nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg"));
-//        }
         initRecyclerView();
         new FetchMoviesTask().execute(mTestPopularMoviesUrl + mTmdbApiKey + suffix);
 
@@ -59,8 +54,20 @@ public class MoviesActivity extends AppCompatActivity {
         mMoviesRecyclerView.setLayoutManager(gridLayoutManager);
         mMoviesRecyclerView.setHasFixedSize(false);
 
-        mMovieAdapter = new MovieAdapter();
+        mMovieAdapter = new MovieAdapter(this);
         mMoviesRecyclerView.setAdapter(mMovieAdapter);
+
+    }
+
+    @Override
+    public void onMovieItemClickListener(int itemPosition) {
+        if(itemPosition >= 0) {
+            int movieId = movies.get(itemPosition).getId();
+            Intent movieDetailIntent = new Intent(this, MovieDetailsActivity.class);
+            movieDetailIntent.putExtra(Movie.EXTRA_ID, movieId);
+
+            startActivity(movieDetailIntent);
+        }
 
     }
 

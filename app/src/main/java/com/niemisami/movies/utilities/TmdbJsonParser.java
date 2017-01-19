@@ -26,10 +26,9 @@ public class TmdbJsonParser {
         /* List of movies in an array*/
         final String RESULTS = "results";
 
-        final String POSTER_PATH = "poster_path";
-
         final String TITLE = "title";
-
+        final String POSTER_PATH = "poster_path";
+        final String ID = "id";
 
         JSONObject movieJson = new JSONObject(rawMovieJsonString);
 
@@ -45,10 +44,16 @@ public class TmdbJsonParser {
 
             String title = movieObject.getString(TITLE);
             String posterPath = movieObject.getString(POSTER_PATH);
+            int id = movieObject.getInt(ID);
 
-            basicMovieInformationArray.add(new Movie(title, posterPath));
+            basicMovieInformationArray.add(new Movie(id, title, posterPath));
         }
 
         return basicMovieInformationArray;
     }
+
+//    public static Movie getMovieDetailsFromJson(String rawMovieJsonString) {
+//
+//
+//    }
 }
