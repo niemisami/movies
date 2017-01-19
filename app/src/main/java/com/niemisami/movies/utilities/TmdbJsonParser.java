@@ -67,7 +67,7 @@ public class TmdbJsonParser {
         //TODO: Check error in JSON
 
         String title = movieJson.getString(TITLE);
-        String posterPath = movieJson.getString(BACKDROP_PATH);
+        String posterPath = movieJson.getString(POSTER_PATH);
         int id = movieJson.getInt(ID);
         Movie details = new Movie(id, title, posterPath);
 
