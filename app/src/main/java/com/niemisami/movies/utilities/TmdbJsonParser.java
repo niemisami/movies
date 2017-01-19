@@ -11,24 +11,31 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.R.attr.id;
+
 /**
  * Created by Sami on 18.1.2017.
  */
 
 public class TmdbJsonParser {
 
+
+    // Movie list JSON
+    /* Page starting from 1*/
+    private static final String PAGE = "page";
+
+    /* List of movies in an array*/
+    private static final String RESULTS = "results";
+
+    private static final String TITLE = "title";
+    private static final String POSTER_PATH = "poster_path";
+    private static final String ID = "id";
+
+    // Single movie details JSON
+    private static final String BACKDROP_PATH = "backdrop_path";
+
     public static List<Movie> getBasicMovieInfoFromJson(String rawMovieJsonString)
             throws JSONException {
-
-        /* Page starting from 1*/
-        final String PAGE = "page";
-
-        /* List of movies in an array*/
-        final String RESULTS = "results";
-
-        final String TITLE = "title";
-        final String POSTER_PATH = "poster_path";
-        final String ID = "id";
 
         JSONObject movieJson = new JSONObject(rawMovieJsonString);
 
@@ -38,7 +45,7 @@ public class TmdbJsonParser {
 
         List<Movie> basicMovieInformationArray = new ArrayList<>();
 
-        for(int i = 0; i < movieArray.length(); i++) {
+        for (int i = 0; i < movieArray.length(); i++) {
 
             JSONObject movieObject = movieArray.getJSONObject(i);
 
@@ -52,8 +59,18 @@ public class TmdbJsonParser {
         return basicMovieInformationArray;
     }
 
-//    public static Movie getMovieDetailsFromJson(String rawMovieJsonString) {
-//
-//
-//    }
+    public static Movie getMovieDetailsFromJson(String rawMovieJsonString) throws JSONException {
+
+
+        JSONObject movieJson = new JSONObject(rawMovieJsonString);
+
+        //TODO: Check error in JSON
+
+        String title = movieJson.getString(TITLE);
+        String posterPath = movieJson.getString(BACKDROP_PATH);
+        int id = movieJson.getInt(ID);
+        Movie details = new Movie(id, title, posterPath);
+
+        return details;
+    }
 }

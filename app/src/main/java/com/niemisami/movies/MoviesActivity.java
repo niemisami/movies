@@ -44,6 +44,7 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
         mTmdbApiKey = getResources().getString(R.string.tmdb_api_key);
 
         initRecyclerView();
+
         new FetchMoviesTask().execute(mTestPopularMoviesUrl + mTmdbApiKey + suffix);
 
     }

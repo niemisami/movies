@@ -72,14 +72,15 @@ public class MovieDetailsActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             if (s != null) {
-//                try {
-//                    mMovie = TmdbJsonParser.getBasicMovieInfoFromJson(s);
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-                idView.setText(s);
+                try {
+                    mMovie = TmdbJsonParser.getMovieDetailsFromJson(s);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                idView.setText(mMovie.getTitle() + "\n" + mMovie.getPosterPath());
             } else {
+                idView.setText("Problem");
                 mMovie = null;
 //                mMoviesRawData.setText("No data from db");
             }
