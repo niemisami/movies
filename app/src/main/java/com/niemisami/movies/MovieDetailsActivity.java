@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.niemisami.movies.data.Movie;
@@ -39,6 +40,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
     private TextView mErrorView, mTitleView, mReleaseDateView, mSynospsisView, mRatingsView;
 
     private Toolbar mToolbar;
+    private ProgressBar mProgressBar;
 
 
     private ImageView mPosterView;
@@ -58,6 +60,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
         mSynospsisView = (TextView) findViewById(R.id.movie_synopsis);
         mRatingsView = (TextView) findViewById(R.id.movie_rating);
 
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 //        mErrorView = (TextView) findViewById(R.id.movie_title_label);
         new FetchMovieDetailsTask().execute(mTestPopularMoviesUrl + String.valueOf(id) + apiString + mTmdbApiKey + suffix);
 
@@ -84,6 +87,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            mProgressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -106,6 +110,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
+            mProgressBar.setVisibility(View.GONE);
             if (s != null) {
                 try {
                     mMovie = TmdbJsonParser.getMovieDetailsFromJson(s);

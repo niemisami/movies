@@ -33,7 +33,6 @@ public final class NetworkUtils {
     public static Uri buildPosterUri(String posterPath) {
 
         Uri uri = Uri.parse(mPosterBaseUrl + posterPath);
-        Log.d(TAG, uri.toString());
         return uri;
     }
 

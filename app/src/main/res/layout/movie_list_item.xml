@@ -13,9 +13,11 @@
         android:scaleType="fitStart"
         tools:background="#4a7c99" />
     <View
+        android:id="@+id/poster_gradient"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/gradient"/>
+        android:background="@drawable/gradient"
+        android:visibility="invisible"/>
 
     <TextView
         android:id="@+id/movie_title_label"
@@ -25,5 +27,5 @@
         android:padding="@dimen/activity_horizontal_margin"
         android:textColor="#fff"
         android:textSize="@dimen/material_text_title"
-        tools:text="@string/name_placeholder" />
+        tools:text="@string/name_placeholder"/>
 </FrameLayout>

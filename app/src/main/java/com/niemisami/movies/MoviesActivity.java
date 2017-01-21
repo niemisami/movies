@@ -1,18 +1,19 @@
 package com.niemisami.movies;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.niemisami.movies.data.Movie;
@@ -23,8 +24,9 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
+
+import static android.R.attr.id;
 
 public class MoviesActivity extends AppCompatActivity implements MovieAdapter.OnMovieAdapterItemClickListener {
 
@@ -36,11 +38,13 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
     private RecyclerView mMoviesRecyclerView;
     private TextView mMoviesRawData;
     private String mTestPopularMoviesUrl = "https://api.themoviedb.org/3/movie/popular?api_key=";
+    private String mTestTopRatedMoviesUri = "https://api.themoviedb.org/3/movie/top_rated?api_key=";
     public static String mPosterBaseUrl = "https://image.tmdb.org/t/p/w500/";
     private String suffix = "&language=en-US";
     private String mTmdbApiKey;
 
     private MovieAdapter mMovieAdapter;
+    private ProgressBar mProgressBar;
 
     private List<Movie> movies;
 
@@ -60,6 +64,7 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
 
         mTmdbApiKey = getResources().getString(R.string.tmdb_api_key);
 
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         initRecyclerView();
         new FetchMoviesTask().execute(mTestPopularMoviesUrl + mTmdbApiKey + suffix);
         initToolbar();
@@ -77,14 +82,60 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
 
     }
 
+    private Toolbar mToolbar;
+
     private void initToolbar() {
         try {
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            toolbar.setTitle(R.string.app_name);
-            setSupportActionBar(toolbar);
+            mToolbar = (Toolbar) findViewById(R.id.toolbar);
+            mToolbar.setTitle(R.string.action_label_popular);
+            setSupportActionBar(mToolbar);
         } catch (NullPointerException e) {
             Log.e(TAG, "Initializing toolbar: ", e);
         }
+    }
+
+    private MenuItem mPopularMoviesMenuItem, mTopRatedMoviesMenuItem;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_movies, menu);
+        mPopularMoviesMenuItem = menu.findItem(R.id.action_popular);
+        mTopRatedMoviesMenuItem = menu.findItem(R.id.action_top_rated);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            case R.id.action_popular:
+                fetchPopularMovies();
+                return true;
+            case R.id.action_top_rated:
+                fetchTopRatedMovies();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void fetchPopularMovies() {
+        mPopularMoviesMenuItem.setVisible(false);
+        getSupportActionBar().setTitle(getString(R.string.action_label_popular));
+        new FetchMoviesTask().execute(mTestPopularMoviesUrl + mTmdbApiKey + suffix);
+        mTopRatedMoviesMenuItem.setVisible(true);
+    }
+
+    private void fetchTopRatedMovies() {
+        mTopRatedMoviesMenuItem.setVisible(false);
+        getSupportActionBar().setTitle(getString(R.string.action_label_top_rated));
+        new FetchMoviesTask().execute(mTestTopRatedMoviesUri + mTmdbApiKey + suffix);
+        mPopularMoviesMenuItem.setVisible(true);
     }
 
     private static final String EXTRA_VIEW_INFO = "extra_view_info";
@@ -98,7 +149,6 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
 
             startActivity(movieDetailIntent);
         }
-
     }
 
 
@@ -119,6 +169,7 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            mProgressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -141,6 +192,7 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
 
         @Override
         protected void onPostExecute(String s) {
+            mProgressBar.setVisibility(View.GONE);
             if (s != null) {
                 try {
                     movies = TmdbJsonParser.getBasicMovieInfoFromJson(s);
