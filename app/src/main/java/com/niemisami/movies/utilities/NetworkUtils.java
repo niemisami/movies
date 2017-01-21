@@ -15,7 +15,7 @@ public final class NetworkUtils {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
-    public static String mPosterBaseUrl = "https://image.tmdb.org/t/p/w342";
+    public static String mPosterBaseUrl = "https://image.tmdb.org/t/p/w185";
 
     public static URL buildUrl(String movieStringURL) {
         Uri uri = Uri.parse(movieStringURL).buildUpon().build();

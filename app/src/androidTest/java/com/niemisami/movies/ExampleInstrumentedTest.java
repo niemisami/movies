@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.niemisami.movies", appContext.getPackageName());
+        assertEquals("com.niemisami.menu_movies", appContext.getPackageName());
     }
 }

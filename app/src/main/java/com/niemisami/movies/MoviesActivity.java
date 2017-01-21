@@ -3,10 +3,14 @@ package com.niemisami.movies;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.TextView;
@@ -25,8 +29,9 @@ import java.util.List;
 public class MoviesActivity extends AppCompatActivity implements MovieAdapter.OnMovieAdapterItemClickListener {
 
 
-    private int DEFAULT_SPAN_COUNT = 2;
+    private static final String TAG = MoviesActivity.class.getSimpleName();
 
+    private int DEFAULT_SPAN_COUNT = 2;
 
     private RecyclerView mMoviesRecyclerView;
     private TextView mMoviesRawData;
@@ -56,8 +61,8 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
         mTmdbApiKey = getResources().getString(R.string.tmdb_api_key);
 
         initRecyclerView();
-
         new FetchMoviesTask().execute(mTestPopularMoviesUrl + mTmdbApiKey + suffix);
+        initToolbar();
 
     }
 
@@ -72,22 +77,29 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
 
     }
 
+    private void initToolbar() {
+        try {
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            toolbar.setTitle(R.string.app_name);
+            setSupportActionBar(toolbar);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Initializing toolbar: ", e);
+        }
+    }
+
     private static final String EXTRA_VIEW_INFO = "extra_view_info";
+
     @Override
     public void onMovieItemClickListener(View view, int itemPosition) {
-        if(itemPosition >= 0) {
+        if (itemPosition >= 0) {
             int movieId = movies.get(itemPosition).getId();
             Intent movieDetailIntent = new Intent(this, MovieDetailsActivity.class);
             movieDetailIntent.putExtra(Movie.EXTRA_ID, movieId);
 
-            movieDetailIntent.putExtra(EXTRA_VIEW_INFO, bundleViewInfoForTransition(view));
-
             startActivity(movieDetailIntent);
-            overridePendingTransition(0,0);
         }
+
     }
-
-
 
 
     private Bundle bundleViewInfoForTransition(View view) {

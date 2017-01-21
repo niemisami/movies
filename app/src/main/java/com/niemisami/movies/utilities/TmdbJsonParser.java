@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.R.attr.id;
+import static android.R.attr.rating;
 
 /**
  * Created by Sami on 18.1.2017.
@@ -24,12 +25,15 @@ public class TmdbJsonParser {
     /* Page starting from 1*/
     private static final String PAGE = "page";
 
-    /* List of movies in an array*/
+    /* List of menu_movies in an array*/
     private static final String RESULTS = "results";
 
+    private static final String ID = "id";
     private static final String TITLE = "title";
     private static final String POSTER_PATH = "poster_path";
-    private static final String ID = "id";
+    private static final String RELEASE_DATE = "release_date";
+    private static final String SYNOPSIS = "overview";
+    private static final String RATING = "vote_average";
 
     // Single movie details JSON
     private static final String BACKDROP_PATH = "backdrop_path";
@@ -69,7 +73,10 @@ public class TmdbJsonParser {
         String title = movieJson.getString(TITLE);
         String posterPath = movieJson.getString(POSTER_PATH);
         int id = movieJson.getInt(ID);
-        Movie details = new Movie(id, title, posterPath);
+        String releaseDate = movieJson.getString(RELEASE_DATE);
+        String synopsis = movieJson.getString(SYNOPSIS);
+        Double rating = movieJson.getDouble(RATING);
+        Movie details = new Movie(id, title, posterPath, releaseDate, synopsis, rating);
 
         return details;
     }
