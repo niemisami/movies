@@ -34,7 +34,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     private String mTmdbApiKey;
     private Movie mMovie;
-    private TextView mErrorView, mTitleView, mReleaseDateView, mSynospsisView, mRatingsView;
+    private TextView mTitleView, mReleaseDateView, mSynospsisView, mRatingsView;
 
     private Toolbar mToolbar;
     private ProgressBar mProgressBar;
@@ -95,9 +95,13 @@ public class MovieDetailsActivity extends AppCompatActivity {
             String movies = "";
 
             try {
-                movies = NetworkUtils.getResponseFromHttpUrl(movieDetailsDbUrl);
 
-                return movies;
+                if(NetworkUtils.isNetworkConnectionAvailable(MovieDetailsActivity.this)) {
+                    movies = NetworkUtils.getResponseFromHttpUrl(movieDetailsDbUrl);
+                    return movies;
+                } else {
+                    return null;
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -110,12 +114,13 @@ public class MovieDetailsActivity extends AppCompatActivity {
             mProgressBar.setVisibility(View.GONE);
             if (s != null) {
                 try {
+
                     mMovie = TmdbJsonParser.getMovieDetailsFromJson(s);
                     fetchMoviePoster();
 
-
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    mTitleView.setText(getResources().getString(R.string.error_json_parsing));
                 }
                 mTitleView.setText(mMovie.getTitle());
                 mReleaseDateView.setText(mMovie.getReleaseDate());
@@ -124,7 +129,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
                 mRatingsView.setText(rating);
 
             } else {
-//                mErrorView.setText("Problem");
+                mTitleView.setText(getResources().getString(R.string.error_fetch_failed));
                 mMovie = null;
             }
         }

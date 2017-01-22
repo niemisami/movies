@@ -52,6 +52,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
             final Movie movie = mMovies.get(position);
             final MovieAdapterViewHolder movieAdapterViewHolder = holder;
             movieAdapterViewHolder.displayPosterGradient(false);
+            movieAdapterViewHolder.titleTextView.setText("");
             Context context = movieAdapterViewHolder.posterImageView.getContext();
             Picasso.with(context)
                     .load(NetworkUtils.buildPosterUri("w342", movie.getPosterPath().substring(1)))

@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -21,10 +22,13 @@ import com.niemisami.movies.utilities.NetworkUtils;
 import com.niemisami.movies.utilities.TmdbJsonParser;
 
 import org.json.JSONException;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+
+import static android.view.View.GONE;
 
 public class MoviesActivity extends AppCompatActivity implements MovieAdapter.OnMovieAdapterItemClickListener {
 
@@ -41,6 +45,7 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
 
     private MovieAdapter mMovieAdapter;
     private ProgressBar mProgressBar;
+    private TextView mErrorView;
 
     private List<Movie> movies;
 
@@ -61,6 +66,7 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
         mTmdbApiKey = getResources().getString(R.string.tmdb_api_key);
 
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        mErrorView = (TextView) findViewById(R.id.error_view);
         initRecyclerView();
         new FetchMoviesTask().execute(mTestPopularMoviesUrl);
         initToolbar();
@@ -69,6 +75,8 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
 
     private void initRecyclerView() {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, DEFAULT_SPAN_COUNT);
+
+
         mMoviesRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_movies);
         mMoviesRecyclerView.setLayoutManager(gridLayoutManager);
         mMoviesRecyclerView.setHasFixedSize(false);
@@ -160,6 +168,8 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
         return viewPositionBundle;
     }
 
+
+
     private class FetchMoviesTask extends AsyncTask<String, Void, String> {
 
         @Override
@@ -171,14 +181,24 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
         @Override
         protected String doInBackground(String... strings) {
 
-            URL movieDbUrl = NetworkUtils.buildMovieUrl(strings[0],mTmdbApiKey);
+            URL movieDbUrl = NetworkUtils.buildMovieUrl(strings[0], mTmdbApiKey);
+
+
+            Log.d(TAG, "onPostExecute: " + movieDbUrl.toString());
 
             String movies = "";
 
             try {
-                movies = NetworkUtils.getResponseFromHttpUrl(movieDbUrl);
+                if(NetworkUtils.isNetworkConnectionAvailable(MoviesActivity.this)) {
+                    movies = NetworkUtils.getResponseFromHttpUrl(movieDbUrl);
+                } else {
+                    return null;
+                }
 
-                return movies;
+                if (movies != null) {
+                    return movies;
+                }
+                return "No internet connection";
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -190,15 +210,21 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
         protected void onPostExecute(String s) {
             mProgressBar.setVisibility(View.GONE);
             if (s != null) {
+                if(mErrorView.getVisibility() == View.VISIBLE) {
+                    mErrorView.setVisibility(View.GONE);
+                }
                 try {
                     movies = TmdbJsonParser.getBasicMovieInfoFromJson(s);
                     mMovieAdapter.setMovies(movies);
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    mErrorView.setVisibility(View.VISIBLE);
                 }
             } else {
                 mMovieAdapter.setMovies(null);
                 movies = null;
+                mErrorView.setVisibility(View.VISIBLE);
+
 //                mMoviesRawData.setText("No data from db");
             }
         }

@@ -13,12 +13,25 @@
 
         <include layout="@layout/toolbar" />
 
-
         <RelativeLayout
             android:id="@+id/activity_movies"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:context="com.niemisami.movies.MoviesActivity">
+
+            <TextView
+                android:id="@+id/error_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:padding="@dimen/activity_horizontal_margin"
+                android:text="@string/error_fetch_failed"
+                android:textAlignment="center"
+                android:textColor="@color/ambient_white"
+                android:textSize="@dimen/material_text_title"
+                android:visibility="gone"
+                />
+
             <ProgressBar
                 android:id="@+id/progress_bar"
                 style="@style/Widget.AppCompat.ProgressBar.Horizontal"

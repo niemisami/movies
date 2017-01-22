@@ -10,8 +10,7 @@
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:background="@color/colorAccent"
-        android:scaleType="fitStart"
-        tools:background="#4a7c99" />
+        android:scaleType="fitStart"/>
     <View
         android:id="@+id/poster_gradient"
         android:layout_width="match_parent"
@@ -25,7 +24,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom"
         android:padding="@dimen/activity_horizontal_margin"
-        android:textColor="#fff"
-        android:textSize="@dimen/material_text_title"
-        tools:text="@string/name_placeholder"/>
+        android:textColor="@color/ambient_white"
+        android:textSize="@dimen/material_text_title"/>
 </FrameLayout>

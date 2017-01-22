@@ -1,6 +1,7 @@
 package com.niemisami.movies.utilities;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.niemisami.movies.data.Movie;
 
@@ -13,6 +14,7 @@ import java.util.List;
 
 import static android.R.attr.id;
 import static android.R.attr.rating;
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by Sami on 18.1.2017.
@@ -20,6 +22,8 @@ import static android.R.attr.rating;
 
 public class TmdbJsonParser {
 
+
+    private static final String TAG = TmdbJsonParser.class.getSimpleName();
 
     // Movie list JSON
     /* Page starting from 1*/
@@ -31,19 +35,30 @@ public class TmdbJsonParser {
     private static final String ID = "id";
     private static final String TITLE = "title";
     private static final String POSTER_PATH = "poster_path";
+
+    /*Error case*/
+    private static final String STATUS_CODE = "status_code";
+    private static final String STATUS_MESSAGE = "status_message";
+
+    // Single movie details JSON
+    private static final String BACKDROP_PATH = "backdrop_path";
     private static final String RELEASE_DATE = "release_date";
     private static final String SYNOPSIS = "overview";
     private static final String RATING = "vote_average";
 
-    // Single movie details JSON
-    private static final String BACKDROP_PATH = "backdrop_path";
+
 
     public static List<Movie> getBasicMovieInfoFromJson(String rawMovieJsonString)
             throws JSONException {
 
         JSONObject movieJson = new JSONObject(rawMovieJsonString);
 
-        //TODO: Check error in JSON
+
+        // Something went wrong and server sent error json
+        if(movieJson.has(STATUS_CODE)) {
+            Log.d(TAG, "getBasicMovieInfoFromJson: " + movieJson.getString(STATUS_MESSAGE));
+            return null;
+        }
 
         JSONArray movieArray = movieJson.getJSONArray(RESULTS);
 

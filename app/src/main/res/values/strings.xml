@@ -4,4 +4,6 @@
     <string name="movie_title_transition">movie_title_transition</string>
     <string name="action_label_top_rated">Top rated</string>
     <string name="action_label_popular">Most popular</string>
+    <string name="error_fetch_failed">Failed to fetch movies!\n:(</string>
+    <string name="error_json_parsing">Failed to fetch movie data!</string>
 </resources>

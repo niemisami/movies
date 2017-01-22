@@ -1,5 +1,8 @@
 package com.niemisami.movies.utilities;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.util.Log;
 
@@ -25,6 +28,27 @@ public final class NetworkUtils {
     private static String mDefaultLanguage = "en-US";
     private static String mDefaultRegion = "US";
 
+
+    public static boolean isNetworkConnectionAvailable(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnected()) {
+            try {
+                URL url = new URL("http://www.google.com");
+                HttpURLConnection urlc = (HttpURLConnection) url.openConnection();
+                urlc.setConnectTimeout(3000);
+                urlc.connect();
+                if (urlc.getResponseCode() == 200) {
+                    return true;
+                }
+            } catch (MalformedURLException e1) {
+                e1.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
 
     public static URL buildMovieUrl(String queryType, String apiKey) {
         Uri uri = Uri.parse(mMovieBaseUrl).buildUpon()
@@ -54,6 +78,7 @@ public final class NetworkUtils {
     }
 
     public static String getResponseFromHttpUrl(URL url) throws IOException {
+
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {
             InputStream in = urlConnection.getInputStream();
@@ -71,6 +96,4 @@ public final class NetworkUtils {
             urlConnection.disconnect();
         }
     }
-
-
 }
