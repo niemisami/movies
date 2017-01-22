@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Movies</string>
     <string name="name_placeholder">Sample Name</string>
+    <string name="movie_title_transition">movie_title_transition</string>
+    <string name="action_label_top_rated">Top rated</string>
+    <string name="action_label_popular">Most popular</string>
 </resources>

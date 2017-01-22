@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.niemisami.movies.data.Movie;
 import com.niemisami.movies.utilities.NetworkUtils;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     }
 
     public interface OnMovieAdapterItemClickListener {
-        void onMovieItemClickListener(int itemPosition);
+        void onMovieItemClickListener(View view, int itemPosition);
     }
 
     public void setMovies(List<Movie> movies) {
@@ -48,15 +49,26 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
         if (mMovies != null) {
-            Movie movie = mMovies.get(position);
-
-            Context context = holder.posterImageView.getContext();
+            final Movie movie = mMovies.get(position);
+            final MovieAdapterViewHolder movieAdapterViewHolder = holder;
+            movieAdapterViewHolder.displayPosterGradient(false);
+            Context context = movieAdapterViewHolder.posterImageView.getContext();
             Picasso.with(context)
-                    .load(NetworkUtils.buildPosterUri(movie.getPosterPath()))
+                    .load(NetworkUtils.buildPosterUri("w342", movie.getPosterPath().substring(1)))
                     .error(R.mipmap.ic_launcher)
-                    .into(holder.posterImageView);
+                    .into(holder.posterImageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            movieAdapterViewHolder.displayPosterGradient(true);
+                            movieAdapterViewHolder.titleTextView.setText(movie.getTitle());
+                        }
 
-            holder.titleTextView.setText(movie.getTitle());
+                        @Override
+                        public void onError() {
+
+                        }
+                    });
+
         }
     }
 
@@ -72,18 +84,28 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
         protected ImageView posterImageView;
         protected TextView titleTextView;
+        View posterGradient;
 
         public MovieAdapterViewHolder(View itemView) {
             super(itemView);
             posterImageView = (ImageView) itemView.findViewById(R.id.poster_view);
             titleTextView = (TextView) itemView.findViewById(R.id.movie_title_label);
+            posterGradient = itemView.findViewById(R.id.poster_gradient);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             int itemPosition = getAdapterPosition();
-            mMovieItemClickListener.onMovieItemClickListener(itemPosition);
+            mMovieItemClickListener.onMovieItemClickListener(view, itemPosition);
+        }
+
+        public void displayPosterGradient(boolean display) {
+            if(display) {
+                posterGradient.setVisibility(View.VISIBLE);
+            } else
+                posterGradient.setVisibility(View.INVISIBLE);
+
         }
     }
 }
