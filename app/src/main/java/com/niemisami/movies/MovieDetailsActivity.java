@@ -33,9 +33,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
     private static final String TAG = MovieDetailsActivity.class.getSimpleName();
 
     private String mTmdbApiKey;
-    private String mTestPopularMoviesUrl = "https://api.themoviedb.org/3/movie/";
-    private String apiString = "?api_key=";
-    private String suffix = "&language=en-US";
     private Movie mMovie;
     private TextView mErrorView, mTitleView, mReleaseDateView, mSynospsisView, mRatingsView;
 
@@ -62,7 +59,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 //        mErrorView = (TextView) findViewById(R.id.movie_title_label);
-        new FetchMovieDetailsTask().execute(mTestPopularMoviesUrl + String.valueOf(id) + apiString + mTmdbApiKey + suffix);
+        new FetchMovieDetailsTask().execute(String.valueOf(id));
 
         initToolbar();
 
@@ -93,7 +90,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... strings) {
 
-            URL movieDetailsDbUrl = NetworkUtils.buildUrl(strings[0]);
+            URL movieDetailsDbUrl = NetworkUtils.buildMovieUrl(strings[0], mTmdbApiKey);
 
             String movies = "";
 
@@ -136,7 +133,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
     private void fetchMoviePoster() {
         if (mMovie != null) {
             Picasso.with(this)
-                    .load(NetworkUtils.buildPosterUri(mMovie.getPosterPath()))
+                    .load(NetworkUtils.buildPosterUri("w185",mMovie.getPosterPath().substring(1)))
                     .error(R.mipmap.ic_launcher)
                     .into(mPosterView);
         }

@@ -49,18 +49,18 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
         if (mMovies != null) {
-            Movie movie = mMovies.get(position);
-
+            final Movie movie = mMovies.get(position);
             final MovieAdapterViewHolder movieAdapterViewHolder = holder;
             movieAdapterViewHolder.displayPosterGradient(false);
             Context context = movieAdapterViewHolder.posterImageView.getContext();
             Picasso.with(context)
-                    .load(NetworkUtils.buildPosterUri(movie.getPosterPath()))
+                    .load(NetworkUtils.buildPosterUri("w342", movie.getPosterPath().substring(1)))
                     .error(R.mipmap.ic_launcher)
                     .into(holder.posterImageView, new Callback() {
                         @Override
                         public void onSuccess() {
                             movieAdapterViewHolder.displayPosterGradient(true);
+                            movieAdapterViewHolder.titleTextView.setText(movie.getTitle());
                         }
 
                         @Override
@@ -69,7 +69,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                         }
                     });
 
-            movieAdapterViewHolder.titleTextView.setText(movie.getTitle());
         }
     }
 

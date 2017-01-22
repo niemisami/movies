@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-import static android.R.attr.id;
-
 public class MoviesActivity extends AppCompatActivity implements MovieAdapter.OnMovieAdapterItemClickListener {
 
 
@@ -37,10 +35,8 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
 
     private RecyclerView mMoviesRecyclerView;
     private TextView mMoviesRawData;
-    private String mTestPopularMoviesUrl = "https://api.themoviedb.org/3/movie/popular?api_key=";
-    private String mTestTopRatedMoviesUri = "https://api.themoviedb.org/3/movie/top_rated?api_key=";
-    public static String mPosterBaseUrl = "https://image.tmdb.org/t/p/w500/";
-    private String suffix = "&language=en-US";
+    private String mTestPopularMoviesUrl = "popular";
+    private String mTestTopRatedMoviesUri = "top_rated";
     private String mTmdbApiKey;
 
     private MovieAdapter mMovieAdapter;
@@ -66,7 +62,7 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
 
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         initRecyclerView();
-        new FetchMoviesTask().execute(mTestPopularMoviesUrl + mTmdbApiKey + suffix);
+        new FetchMoviesTask().execute(mTestPopularMoviesUrl);
         initToolbar();
 
     }
@@ -127,14 +123,14 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
     private void fetchPopularMovies() {
         mPopularMoviesMenuItem.setVisible(false);
         getSupportActionBar().setTitle(getString(R.string.action_label_popular));
-        new FetchMoviesTask().execute(mTestPopularMoviesUrl + mTmdbApiKey + suffix);
+        new FetchMoviesTask().execute(mTestPopularMoviesUrl);
         mTopRatedMoviesMenuItem.setVisible(true);
     }
 
     private void fetchTopRatedMovies() {
         mTopRatedMoviesMenuItem.setVisible(false);
         getSupportActionBar().setTitle(getString(R.string.action_label_top_rated));
-        new FetchMoviesTask().execute(mTestTopRatedMoviesUri + mTmdbApiKey + suffix);
+        new FetchMoviesTask().execute(mTestTopRatedMoviesUri);
         mPopularMoviesMenuItem.setVisible(true);
     }
 
@@ -175,7 +171,7 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
         @Override
         protected String doInBackground(String... strings) {
 
-            URL movieDbUrl = NetworkUtils.buildUrl(strings[0]);
+            URL movieDbUrl = NetworkUtils.buildMovieUrl(strings[0],mTmdbApiKey);
 
             String movies = "";
 
