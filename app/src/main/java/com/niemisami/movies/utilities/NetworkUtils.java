@@ -73,7 +73,6 @@ public final class NetworkUtils {
                 .appendPath(fileSize)
                 .appendPath(posterPath)
                 .build();
-        Log.d(TAG, "buildMovieUrl: " + uri.toString());
         return uri;
     }
 

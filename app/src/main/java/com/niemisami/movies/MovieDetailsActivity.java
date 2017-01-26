@@ -23,10 +23,10 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.net.URL;
 
-import static com.niemisami.movies.MoviesActivity.PROPNAME_HEIGHT;
-import static com.niemisami.movies.MoviesActivity.PROPNAME_SCREEN_LOCATION_LEFT;
-import static com.niemisami.movies.MoviesActivity.PROPNAME_SCREEN_LOCATION_TOP;
-import static com.niemisami.movies.MoviesActivity.PROPNAME_WIDTH;
+//import static com.niemisami.movies.MoviesActivity.PROPNAME_HEIGHT;
+//import static com.niemisami.movies.MoviesActivity.PROPNAME_SCREEN_LOCATION_LEFT;
+//import static com.niemisami.movies.MoviesActivity.PROPNAME_SCREEN_LOCATION_TOP;
+//import static com.niemisami.movies.MoviesActivity.PROPNAME_WIDTH;
 
 public class MovieDetailsActivity extends AppCompatActivity {
 
@@ -66,17 +66,17 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     }
 
-    private Bundle extractViewPositionForTransition(View view) {
-        Bundle viewPositionBundle = new Bundle();
-        int[] screenLocation = new int[2];
-        view.getLocationOnScreen(screenLocation);
-        viewPositionBundle.putInt(PROPNAME_SCREEN_LOCATION_LEFT, screenLocation[0]);
-        viewPositionBundle.putInt(PROPNAME_SCREEN_LOCATION_TOP, screenLocation[1]);
-        viewPositionBundle.putInt(PROPNAME_HEIGHT, view.getHeight());
-        viewPositionBundle.putInt(PROPNAME_WIDTH, view.getWidth());
-
-        return viewPositionBundle;
-    }
+//    private Bundle extractViewPositionForTransition(View view) {
+//        Bundle viewPositionBundle = new Bundle();
+//        int[] screenLocation = new int[2];
+//        view.getLocationOnScreen(screenLocation);
+//        viewPositionBundle.putInt(PROPNAME_SCREEN_LOCATION_LEFT, screenLocation[0]);
+//        viewPositionBundle.putInt(PROPNAME_SCREEN_LOCATION_TOP, screenLocation[1]);
+//        viewPositionBundle.putInt(PROPNAME_HEIGHT, view.getHeight());
+//        viewPositionBundle.putInt(PROPNAME_WIDTH, view.getWidth());
+//
+//        return viewPositionBundle;
+//    }
 
 
     private class FetchMovieDetailsTask extends AsyncTask<String, Void, String> {

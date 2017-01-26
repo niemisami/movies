@@ -1,7 +1,11 @@
 package com.niemisami.movies;
 
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,7 +17,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -22,25 +25,19 @@ import com.niemisami.movies.utilities.NetworkUtils;
 import com.niemisami.movies.utilities.TmdbJsonParser;
 
 import org.json.JSONException;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-
-import static android.view.View.GONE;
 
 public class MoviesActivity extends AppCompatActivity implements MovieAdapter.OnMovieAdapterItemClickListener {
 
 
     private static final String TAG = MoviesActivity.class.getSimpleName();
 
-    private int DEFAULT_SPAN_COUNT = 2;
-
     private RecyclerView mMoviesRecyclerView;
-    private TextView mMoviesRawData;
-    private String mTestPopularMoviesUrl = "popular";
-    private String mTestTopRatedMoviesUri = "top_rated";
+    private String mSortingByPopular = "popular";
+    private String mSortingByTopRated = "top_rated";
     private String mTmdbApiKey;
 
     private MovieAdapter mMovieAdapter;
@@ -49,33 +46,68 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
 
     private List<Movie> movies;
 
-
-    public static final String PROPNAME_SCREEN_LOCATION_LEFT = "prop_screen_location_left";
-    public static final String PROPNAME_SCREEN_LOCATION_TOP = "prop_screen_location_top";
-    public static final String PROPNAME_WIDTH = "prop_width";
-    public static final String PROPNAME_HEIGHT = "prop_height";
-
-    public static final AccelerateDecelerateInterpolator DEFAULT_INTERPOLATOR = new AccelerateDecelerateInterpolator();
-    public static final int DEFAULT_DURATION = 300;
+//    public static final String PROPNAME_SCREEN_LOCATION_LEFT = "prop_screen_location_left";
+//    public static final String PROPNAME_SCREEN_LOCATION_TOP = "prop_screen_location_top";
+//    public static final String PROPNAME_WIDTH = "prop_width";
+//    public static final String PROPNAME_HEIGHT = "prop_height";
+//
+//    public static final AccelerateDecelerateInterpolator DEFAULT_INTERPOLATOR = new AccelerateDecelerateInterpolator();
+//    public static final int DEFAULT_DURATION = 300;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movies);
 
-        mTmdbApiKey = getResources().getString(R.string.tmdb_api_key);
 
+        mTmdbApiKey = getApiKey();
+        if (mTmdbApiKey.length() == 0) {// Check whether api key file has been set
+            mErrorView.setText(R.string.error_api_key);
+
+        } else {
+            initViews();
+        }
+    }
+
+    private int getMovieGridSpanCount() {
+        int orientation = getResources().getConfiguration().orientation;
+        int spanCount = 2; // 2 at least
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            spanCount = 3;
+        }
+        return spanCount;
+    }
+
+    private void fetchMoviesBy(String sortingCriteria) {
+        new FetchMoviesTask().execute(sortingCriteria);
+
+        if (sortingCriteria.equals(mSortingByTopRated)) {
+            mTopRatedMoviesMenuItem.setVisible(false);
+            getSupportActionBar().setTitle(getString(R.string.action_label_top_rated));
+            mPopularMoviesMenuItem.setVisible(true);
+
+        } else if (sortingCriteria.equals(mSortingByPopular)) {
+            mPopularMoviesMenuItem.setVisible(false);
+            getSupportActionBar().setTitle(getString(R.string.action_label_popular));
+            mTopRatedMoviesMenuItem.setVisible(true);
+        }
+    }
+
+    private void initViews() {
+        initToolbar();
+        initRecyclerView();
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mErrorView = (TextView) findViewById(R.id.error_view);
-        initRecyclerView();
-        new FetchMoviesTask().execute(mTestPopularMoviesUrl);
-        initToolbar();
+    }
 
+    @NonNull
+    private String getApiKey() {
+        return getResources().getString(R.string.tmdb_api_key);
     }
 
     private void initRecyclerView() {
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, DEFAULT_SPAN_COUNT);
-
+        int movieGridSpanCount = getMovieGridSpanCount();
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, movieGridSpanCount);
 
         mMoviesRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_movies);
         mMoviesRecyclerView.setLayoutManager(gridLayoutManager);
@@ -107,6 +139,9 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
         mPopularMoviesMenuItem = menu.findItem(R.id.action_popular);
         mTopRatedMoviesMenuItem = menu.findItem(R.id.action_top_rated);
 
+
+        fetchMoviesBy(mSortingByPopular);
+
         return true;
     }
 
@@ -119,30 +154,59 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
                 onBackPressed();
                 return true;
             case R.id.action_popular:
-                fetchPopularMovies();
+                fetchMoviesBy(mSortingByPopular);
                 return true;
             case R.id.action_top_rated:
-                fetchTopRatedMovies();
+                fetchMoviesBy(mSortingByTopRated);
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void fetchPopularMovies() {
-        mPopularMoviesMenuItem.setVisible(false);
-        getSupportActionBar().setTitle(getString(R.string.action_label_popular));
-        new FetchMoviesTask().execute(mTestPopularMoviesUrl);
-        mTopRatedMoviesMenuItem.setVisible(true);
+
+
+    private static Bundle mBundleRecyclerViewState;
+
+    private static final String RECYCLER_VIEW_SCROLL_POSITION = "recycler_view_scroll_position";
+
+
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // restore RecyclerView state
+
+    }
+    private void restoreLayoutManagerPosition() {
+        if (mBundleRecyclerViewState != null) {
+            Parcelable movieGridState = mBundleRecyclerViewState.getParcelable(RECYCLER_VIEW_SCROLL_POSITION);
+            mMoviesRecyclerView.getLayoutManager().onRestoreInstanceState(movieGridState);
+        }
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // save RecyclerView state
+        mBundleRecyclerViewState = new Bundle();
+        Parcelable movieGridState = mMoviesRecyclerView.getLayoutManager().onSaveInstanceState();
+        mBundleRecyclerViewState.putParcelable(RECYCLER_VIEW_SCROLL_POSITION, movieGridState);
     }
 
-    private void fetchTopRatedMovies() {
-        mTopRatedMoviesMenuItem.setVisible(false);
-        getSupportActionBar().setTitle(getString(R.string.action_label_top_rated));
-        new FetchMoviesTask().execute(mTestTopRatedMoviesUri);
-        mPopularMoviesMenuItem.setVisible(true);
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBundle(RECYCLER_VIEW_SCROLL_POSITION, mBundleRecyclerViewState);
     }
 
-    private static final String EXTRA_VIEW_INFO = "extra_view_info";
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            mBundleRecyclerViewState = savedInstanceState.getBundle(RECYCLER_VIEW_SCROLL_POSITION);
+        }
+    }
 
     @Override
     public void onMovieItemClickListener(View view, int itemPosition) {
@@ -155,19 +219,18 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
         }
     }
 
-
-    private Bundle bundleViewInfoForTransition(View view) {
-        Bundle viewPositionBundle = new Bundle();
-        int[] screenLocation = new int[2];
-        view.getLocationOnScreen(screenLocation);
-        viewPositionBundle.putInt(PROPNAME_SCREEN_LOCATION_LEFT, screenLocation[0]);
-        viewPositionBundle.putInt(PROPNAME_SCREEN_LOCATION_TOP, screenLocation[1]);
-        viewPositionBundle.putInt(PROPNAME_HEIGHT, view.getHeight());
-        viewPositionBundle.putInt(PROPNAME_WIDTH, view.getWidth());
-
-        return viewPositionBundle;
-    }
-
+//    private static final String EXTRA_VIEW_INFO = "extra_view_info";
+//    private Bundle bundleViewInfoForTransition(View view) {
+//        Bundle viewPositionBundle = new Bundle();
+//        int[] screenLocation = new int[2];
+//        view.getLocationOnScreen(screenLocation);
+//        viewPositionBundle.putInt(PROPNAME_SCREEN_LOCATION_LEFT, screenLocation[0]);
+//        viewPositionBundle.putInt(PROPNAME_SCREEN_LOCATION_TOP, screenLocation[1]);
+//        viewPositionBundle.putInt(PROPNAME_HEIGHT, view.getHeight());
+//        viewPositionBundle.putInt(PROPNAME_WIDTH, view.getWidth());
+//
+//        return viewPositionBundle;
+//    }
 
 
     private class FetchMoviesTask extends AsyncTask<String, Void, String> {
@@ -175,30 +238,23 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mProgressBar.setVisibility(View.VISIBLE);
+            mProgressBar.setVisibility(View.VISIBLE);        // Hide and show corresponding menu items
         }
 
         @Override
         protected String doInBackground(String... strings) {
 
             URL movieDbUrl = NetworkUtils.buildMovieUrl(strings[0], mTmdbApiKey);
-
-
-            Log.d(TAG, "onPostExecute: " + movieDbUrl.toString());
-
             String movies = "";
 
             try {
-                if(NetworkUtils.isNetworkConnectionAvailable(MoviesActivity.this)) {
+                if (NetworkUtils.isNetworkConnectionAvailable(MoviesActivity.this)) {
                     movies = NetworkUtils.getResponseFromHttpUrl(movieDbUrl);
                 } else {
-                    return null;
+                    return "No internet connection";
                 }
 
-                if (movies != null) {
-                    return movies;
-                }
-                return "No internet connection";
+                return movies;
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -210,12 +266,15 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
         protected void onPostExecute(String s) {
             mProgressBar.setVisibility(View.GONE);
             if (s != null) {
-                if(mErrorView.getVisibility() == View.VISIBLE) {
+                if (mErrorView.getVisibility() == View.VISIBLE) {
                     mErrorView.setVisibility(View.GONE);
                 }
                 try {
                     movies = TmdbJsonParser.getBasicMovieInfoFromJson(s);
                     mMovieAdapter.setMovies(movies);
+
+                    restoreLayoutManagerPosition();
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                     mErrorView.setVisibility(View.VISIBLE);
@@ -224,8 +283,6 @@ public class MoviesActivity extends AppCompatActivity implements MovieAdapter.On
                 mMovieAdapter.setMovies(null);
                 movies = null;
                 mErrorView.setVisibility(View.VISIBLE);
-
-//                mMoviesRawData.setText("No data from db");
             }
         }
     }
