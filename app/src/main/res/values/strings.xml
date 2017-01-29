@@ -7,4 +7,5 @@
     <string name="error_fetch_failed">Failed to fetch movies!\n:(</string>
     <string name="error_json_parsing">Failed to fetch movie data!</string>
     <string name="error_api_key">Cannot find TMDB api key</string>
+    <string name="error_no_internet_connection">"No internet connection"</string>
 </resources>

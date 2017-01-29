@@ -138,7 +138,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
     private void fetchMoviePoster() {
         if (mMovie != null) {
             Picasso.with(this)
-                    .load(NetworkUtils.buildPosterUri("w185",mMovie.getPosterPath().substring(1)))
+                    .load(NetworkUtils.buildPosterUri(NetworkUtils.mPosterSizeLarge, mMovie.getPosterPath().substring(1)))
                     .error(R.mipmap.ic_launcher)
                     .into(mPosterView);
         }

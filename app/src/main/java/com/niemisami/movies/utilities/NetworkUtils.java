@@ -19,6 +19,8 @@ public final class NetworkUtils {
 
     private static String mPosterBaseUrl = "https://image.tmdb.org/t/p";
     private static String mMovieBaseUrl = "https://api.themoviedb.org/3/movie";
+    public static String mPosterSizeMedium = "w185";
+    public static String mPosterSizeLarge = "w342";
     final static String QUERY_PARAM = "q";
     private final static String API_KEY_PARAM = "api_key";
     private final static String LANGUAGE_PARAM = "language";

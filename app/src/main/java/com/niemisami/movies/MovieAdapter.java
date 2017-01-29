@@ -60,8 +60,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
             movieAdapterViewHolder.titleTextView.setText("");
             Context context = movieAdapterViewHolder.posterImageView.getContext();
             Picasso.with(context)
-                    .load(NetworkUtils.buildPosterUri("w342", movie.getPosterPath().substring(1)))
-                    .error(R.mipmap.ic_launcher)
+                    .load(NetworkUtils.buildPosterUri(NetworkUtils.mPosterSizeMedium, movie.getPosterPath().substring(1)))
+                    .error(R.drawable.movie)
                     .into(holder.posterImageView, new Callback() {
                         @Override
                         public void onSuccess() {
@@ -74,7 +74,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
                         }
                     });
-
         }
     }
 

@@ -53,10 +53,8 @@ public class TmdbJsonParser {
 
         JSONObject movieJson = new JSONObject(rawMovieJsonString);
 
-
         // Something went wrong and server sent error json
         if(movieJson.has(STATUS_CODE)) {
-            Log.d(TAG, "getBasicMovieInfoFromJson: " + movieJson.getString(STATUS_MESSAGE));
             return null;
         }
 
@@ -67,7 +65,6 @@ public class TmdbJsonParser {
         for (int i = 0; i < movieArray.length(); i++) {
 
             JSONObject movieObject = movieArray.getJSONObject(i);
-
             String title = movieObject.getString(TITLE);
             String posterPath = movieObject.getString(POSTER_PATH);
             int id = movieObject.getInt(ID);
@@ -80,10 +77,12 @@ public class TmdbJsonParser {
 
     public static Movie getMovieDetailsFromJson(String rawMovieJsonString) throws JSONException {
 
-
         JSONObject movieJson = new JSONObject(rawMovieJsonString);
 
-        //TODO: Check error in JSON
+        // Something went wrong and server sent error json
+        if(movieJson.has(STATUS_CODE)) {
+            return null;
+        }
 
         String title = movieJson.getString(TITLE);
         String posterPath = movieJson.getString(POSTER_PATH);
