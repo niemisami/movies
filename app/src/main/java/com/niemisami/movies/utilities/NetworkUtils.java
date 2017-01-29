@@ -50,6 +50,23 @@ public final class NetworkUtils {
         return false;
     }
 
+    public static URL buildMovieUrl(String queryType, String apiKey, int page) {
+        Uri uri = Uri.parse(mMovieBaseUrl).buildUpon()
+                .appendPath(queryType)
+                .appendQueryParameter(API_KEY_PARAM, apiKey)
+                .appendQueryParameter(LANGUAGE_PARAM, mDefaultLanguage)
+                .appendQueryParameter(PAGE_PARAM, String.valueOf(page))
+                .build();
+
+        URL url = null;
+        try {
+            url = new URL(uri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        return url;
+    }
     public static URL buildMovieUrl(String queryType, String apiKey) {
         Uri uri = Uri.parse(mMovieBaseUrl).buildUpon()
                 .appendPath(queryType)

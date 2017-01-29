@@ -38,6 +38,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         notifyDataSetChanged();
     }
 
+    public void appendMovies(List<Movie> movies) {
+        mMovies.addAll(movies);
+        notifyDataSetChanged();
+    }
+
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
@@ -102,7 +107,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         }
 
         public void displayPosterGradient(boolean display) {
-            if(display) {
+            if (display) {
                 posterGradient.setVisibility(View.VISIBLE);
             } else
                 posterGradient.setVisibility(View.INVISIBLE);
