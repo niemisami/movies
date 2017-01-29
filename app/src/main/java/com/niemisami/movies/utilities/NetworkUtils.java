@@ -17,10 +17,11 @@ public final class NetworkUtils {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
+    public static final String POSTER_SIZE_MEDIUM = "w185";
+    public static final String POSTER_SIZE_LARGE = "w342";
+
     private static String mPosterBaseUrl = "https://image.tmdb.org/t/p";
     private static String mMovieBaseUrl = "https://api.themoviedb.org/3/movie";
-    public static String mPosterSizeMedium = "w185";
-    public static String mPosterSizeLarge = "w342";
     final static String QUERY_PARAM = "q";
     private final static String API_KEY_PARAM = "api_key";
     private final static String LANGUAGE_PARAM = "language";
@@ -74,7 +75,6 @@ public final class NetworkUtils {
                 .appendPath(queryType)
                 .appendQueryParameter(API_KEY_PARAM, apiKey)
                 .appendQueryParameter(LANGUAGE_PARAM, mDefaultLanguage)
-                .appendQueryParameter(PAGE_PARAM, String.valueOf(mDefaultPage))
                 .build();
 
         URL url = null;

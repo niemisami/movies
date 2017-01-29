@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.niemisami.movies.data.Movie;
+import com.niemisami.movies.utilities.DateUtils;
 import com.niemisami.movies.utilities.NetworkUtils;
 import com.niemisami.movies.utilities.TmdbJsonParser;
 import com.squareup.picasso.Picasso;
@@ -22,11 +23,6 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.URL;
-
-//import static com.niemisami.movies.MoviesActivity.PROPNAME_HEIGHT;
-//import static com.niemisami.movies.MoviesActivity.PROPNAME_SCREEN_LOCATION_LEFT;
-//import static com.niemisami.movies.MoviesActivity.PROPNAME_SCREEN_LOCATION_TOP;
-//import static com.niemisami.movies.MoviesActivity.PROPNAME_WIDTH;
 
 public class MovieDetailsActivity extends AppCompatActivity {
 
@@ -58,26 +54,11 @@ public class MovieDetailsActivity extends AppCompatActivity {
         mRatingsView = (TextView) findViewById(R.id.movie_rating);
 
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
-//        mErrorView = (TextView) findViewById(R.id.movie_title_label);
         new FetchMovieDetailsTask().execute(String.valueOf(id));
-
         initToolbar();
 
 
     }
-
-//    private Bundle extractViewPositionForTransition(View view) {
-//        Bundle viewPositionBundle = new Bundle();
-//        int[] screenLocation = new int[2];
-//        view.getLocationOnScreen(screenLocation);
-//        viewPositionBundle.putInt(PROPNAME_SCREEN_LOCATION_LEFT, screenLocation[0]);
-//        viewPositionBundle.putInt(PROPNAME_SCREEN_LOCATION_TOP, screenLocation[1]);
-//        viewPositionBundle.putInt(PROPNAME_HEIGHT, view.getHeight());
-//        viewPositionBundle.putInt(PROPNAME_WIDTH, view.getWidth());
-//
-//        return viewPositionBundle;
-//    }
-
 
     private class FetchMovieDetailsTask extends AsyncTask<String, Void, String> {
 
@@ -123,7 +104,9 @@ public class MovieDetailsActivity extends AppCompatActivity {
                     mTitleView.setText(getResources().getString(R.string.error_json_parsing));
                 }
                 mTitleView.setText(mMovie.getTitle());
-                mReleaseDateView.setText(mMovie.getReleaseDate());
+
+                String releaseDate = DateUtils.dateToString("dd/MM/yyyy", mMovie.getReleaseDate());
+                mReleaseDateView.setText(releaseDate);
                 mSynospsisView.setText(mMovie.getSynopsis());
                 String rating = mMovie.getRating() + "/10";
                 mRatingsView.setText(rating);
@@ -138,7 +121,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
     private void fetchMoviePoster() {
         if (mMovie != null) {
             Picasso.with(this)
-                    .load(NetworkUtils.buildPosterUri(NetworkUtils.mPosterSizeLarge, mMovie.getPosterPath().substring(1)))
+                    .load(NetworkUtils.buildPosterUri(NetworkUtils.POSTER_SIZE_LARGE, mMovie.getPosterPath().substring(1)))
                     .error(R.mipmap.ic_launcher)
                     .into(mPosterView);
         }

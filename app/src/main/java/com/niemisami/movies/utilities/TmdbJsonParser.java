@@ -10,10 +10,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static android.R.attr.id;
 import static android.R.attr.rating;
+import static android.R.attr.relinquishTaskIdentity;
 import static android.content.ContentValues.TAG;
 
 /**
@@ -87,9 +89,11 @@ public class TmdbJsonParser {
         String title = movieJson.getString(TITLE);
         String posterPath = movieJson.getString(POSTER_PATH);
         int id = movieJson.getInt(ID);
-        String releaseDate = movieJson.getString(RELEASE_DATE);
+        String releaseDateString = movieJson.getString(RELEASE_DATE);
         String synopsis = movieJson.getString(SYNOPSIS);
         Double rating = movieJson.getDouble(RATING);
+
+        Date releaseDate = DateUtils.stringToDate("yyyy-MM-dd", releaseDateString);
         Movie details = new Movie(id, title, posterPath, releaseDate, synopsis, rating);
 
         return details;

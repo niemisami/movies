@@ -60,7 +60,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
             movieAdapterViewHolder.titleTextView.setText("");
             Context context = movieAdapterViewHolder.posterImageView.getContext();
             Picasso.with(context)
-                    .load(NetworkUtils.buildPosterUri(NetworkUtils.mPosterSizeMedium, movie.getPosterPath().substring(1)))
+                    .load(NetworkUtils.buildPosterUri(NetworkUtils.POSTER_SIZE_LARGE, movie.getPosterPath().substring(1)))
                     .error(R.drawable.movie)
                     .into(holder.posterImageView, new Callback() {
                         @Override
@@ -87,8 +87,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        protected ImageView posterImageView;
-        protected TextView titleTextView;
+        ImageView posterImageView;
+        TextView titleTextView;
         View posterGradient;
 
         public MovieAdapterViewHolder(View itemView) {
